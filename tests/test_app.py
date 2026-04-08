@@ -11,6 +11,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from pynput.keyboard import Key as SpecialKey
 from pynput.keyboard import KeyCode
+from pynput.keyboard import Listener
 
 from wintoucher.controller.dots import Dots
 from wintoucher.gui.overlay import Overlay
@@ -78,6 +79,15 @@ class TestToggleListen:
 
 
 class TestKeyboardHandlers:
+    def test_handlers_can_be_bound_to_pynput_listener(self, app_parts):
+        app, _, _ = app_parts
+        handlers = app.keyboard_handlers()
+
+        listener = Listener(**handlers)
+
+        assert listener is not None
+        listener.stop()
+
     def test_esc_toggles_listen_when_not_listening(self, app_parts):
         app, _, _ = app_parts
         app.keyboard_listening = False

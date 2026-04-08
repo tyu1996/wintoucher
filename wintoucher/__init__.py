@@ -266,7 +266,7 @@ class WintoucherApp:
 
     def keyboard_handlers(self):
         def prehandler(func: Callable[[Key], None]):
-            def wrapped(key: Key, *args, **kwargs):
+            def wrapped(key: Key):
                 if not is_special_key(key):
                     key = self.keyboard.canonical(key)
 
@@ -276,7 +276,7 @@ class WintoucherApp:
                     return
 
                 if self.keyboard_listening:
-                    func(key, *args, **kwargs)
+                    func(key)
 
             return wrapped
 
