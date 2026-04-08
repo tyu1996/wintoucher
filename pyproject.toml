@@ -21,9 +21,9 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-pynput = "^1.7.6"
-pywin32 = "^306"
+python = "^3.10"
+pynput = "^1.8"
+pywin32 = "^311"
 pystray = "^0.19.5"
 
 [tool.poetry.scripts]
