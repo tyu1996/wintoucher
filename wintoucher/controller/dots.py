@@ -36,7 +36,10 @@ class Dots:
             self._last_operated_dot = None
 
         if self._last_operated_dot is None:
-            self._last_operated_dot = next(reversed(self.dots))
+            for dot in reversed(self.dots):
+                if dot is not None:
+                    self._last_operated_dot = dot
+                    break
 
         return self._last_operated_dot
 
@@ -101,14 +104,20 @@ class Dots:
 
         dot_type = self.TYPES[type]
 
-        next_id = 0
-        for dot in self.dots:
+        # Find first None slot, or append at the end
+        insert_index = None
+        for i, dot in enumerate(self.dots):
             if dot is None:
+                insert_index = i
                 break
-            next_id += 1
 
-        new_dot = dot_type(id=next_id, x=x, y=y, key=None)
-        self.dots.append(new_dot)
+        if insert_index is not None:
+            new_dot = dot_type(id=insert_index, x=x, y=y, key=None)
+            self.dots[insert_index] = new_dot
+        else:
+            new_dot = dot_type(id=len(self.dots), x=x, y=y, key=None)
+            self.dots.append(new_dot)
+
         self.last_operated_dot = new_dot
         self.add_view(new_dot)
 

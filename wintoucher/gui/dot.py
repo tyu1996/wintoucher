@@ -136,17 +136,17 @@ class FlickDotView(DotView):
         super().draw(canvas, outlined)
 
     def detail(self, draw_dots: Callable[[], None]) -> DetailDict:
-        def on_angle_change_factory(var: tk.IntVar):
+        def on_var_change_factory(var: tk.IntVar):
             def round_var(step: int):
                 value = var.get()
                 value = round(value / step) * step
                 var.set(value)
 
-            def on_angle_change(_=None):
+            def on_var_change(_=None):
                 round_var(1)
                 draw_dots()
 
-            return on_angle_change
+            return on_var_change
 
         return {
             **super().detail(draw_dots),
@@ -157,7 +157,7 @@ class FlickDotView(DotView):
                     "to": 360,
                     "textvariable": self.dot.angle,
                     "state": "readonly",
-                    "command": on_angle_change_factory(self.dot.angle),
+                    "command": on_var_change_factory(self.dot.angle),
                 },
             },
             "": {
@@ -167,17 +167,17 @@ class FlickDotView(DotView):
                     "to": 360,
                     "variable": self.dot.angle,
                     "orient": tk.HORIZONTAL,
-                    "command": on_angle_change_factory(self.dot.angle),
+                    "command": on_var_change_factory(self.dot.angle),
                 },
             },
             "Distance": {
                 "widget_type": ttk.Spinbox,
                 "params": {
                     "from_": 0,
-                    "to": 360,
+                    "to": 1000,
                     "textvariable": self.dot.distance,
                     "state": "readonly",
-                    "command": on_angle_change_factory(self.dot.distance),
+                    "command": on_var_change_factory(self.dot.distance),
                 },
             },
         }
@@ -213,7 +213,7 @@ class FlickDotView(DotView):
                 touch_manager.apply_touches()
                 self.running = False
 
-            thread = Thread(target=runner)
+            thread = Thread(target=runner, daemon=True)
             thread.start()
 
     def stop(self):

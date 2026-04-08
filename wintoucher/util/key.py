@@ -97,7 +97,9 @@ def key_to_str(key: Optional[Key]) -> str:
     if key is None:
         return ""
     elif isinstance(key, SpecialKey):
-        return __SPECIAL_KEYS[key]
+        return __SPECIAL_KEYS.get(key, key.name)
     elif isinstance(key, KeyCode):
-        assert key.char is not None
-        return key.char
+        if key.char is not None:
+            return key.char
+        return f"<{key.vk}>"
+    return ""

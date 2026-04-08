@@ -79,7 +79,7 @@ class Overlay(tk.Toplevel):
             return None
         return closest_dot
 
-    def update(self):
+    def refresh(self):
         """
         Redraw the dots alongside updating the current dot detail.
         """
@@ -99,7 +99,7 @@ class Overlay(tk.Toplevel):
         closeset_dot = self.get_closest_dot(x, y)
         if closeset_dot is None:
             self.dots.add(self.new_dot_type.get(), x, y)
-            self.update()
+            self.refresh()
 
     def move_dot(self, event: tk.Event):
         """
@@ -111,7 +111,7 @@ class Overlay(tk.Toplevel):
         if current_dot:
             current_dot.x = x
             current_dot.y = y
-            self.update()
+            self.refresh()
 
     def detail_dot(self, event: tk.Event):
         """
@@ -122,7 +122,7 @@ class Overlay(tk.Toplevel):
         closeset_dot = self.get_closest_dot(x, y)
         if closeset_dot:
             self.dots.current_viewed_dot = closeset_dot
-            self.update()
+            self.refresh()
 
     def remove_or_reassign_dot(self, event: tk.Event):
         """
@@ -140,7 +140,7 @@ class Overlay(tk.Toplevel):
             else:
                 closeset_dot.key = None
                 self.dots.last_operated_dot = closeset_dot
-            self.update()
+            self.refresh()
 
     def draw_dots(self):
         """

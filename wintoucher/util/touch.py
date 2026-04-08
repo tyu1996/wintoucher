@@ -310,11 +310,12 @@ class TouchManager:
         if id >= len(self.touches):
             raise TouchError("Touch ID out of range.")
 
-        touch = self.touches[id]
-        if touch.enabled:
-            touch.move(x, y)
-        else:
-            touch.down(x, y)
+        with self.lock:
+            touch = self.touches[id]
+            if touch.enabled:
+                touch.move(x, y)
+            else:
+                touch.down(x, y)
 
     def up(self, id: int):
         """

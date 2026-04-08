@@ -221,13 +221,14 @@ class WintoucherApp:
             initialdir=os.getcwd(),
         )
         if path:
-            json.dump(
-                self.dots,
-                open(path, "w", encoding="utf-8"),
-                ensure_ascii=False,
-                indent=4,
-                cls=self.json_encoder,
-            )
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(
+                    self.dots,
+                    f,
+                    ensure_ascii=False,
+                    indent=4,
+                    cls=self.json_encoder,
+                )
 
     def load_dots(self):
         if len(self.dots) > 0:
@@ -242,12 +243,16 @@ class WintoucherApp:
             initialdir=os.getcwd(),
         )
         if path:
-            self.dots = json.load(
-                open(path, "r", encoding="utf-8"),
-                cls=self.json_decoder,
-            )
-            self.overlay.dots = self.dots
-            self.overlay.update()
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    self.dots = json.load(f, cls=self.json_decoder)
+                self.overlay.dots = self.dots
+                self.overlay.refresh()
+            except (json.JSONDecodeError, KeyError, TypeError) as e:
+                messagebox.showerror(
+                    "Load Dots",
+                    f"Failed to load dots: {e}",
+                )
 
     def toggle_listen(self, notify: bool = False):
         listen_text = "resume" if self.keyboard_listening else "pause"
@@ -265,6 +270,11 @@ class WintoucherApp:
                 if not is_special_key(key):
                     key = self.keyboard.canonical(key)
 
+                # Always allow Esc to toggle listening
+                if key == SpecialKey.esc:
+                    self.toggle_listen(True)
+                    return
+
                 if self.keyboard_listening:
                     func(key, *args, **kwargs)
 
@@ -272,10 +282,6 @@ class WintoucherApp:
 
         @prehandler
         def on_press(key: Key):
-            if key == SpecialKey.esc:
-                self.toggle_listen()
-                return
-
             if self.overlay.state() == WITHDRAWN:
                 # Inject touch
                 if self.keyboard_listening and is_valid_key(key):
@@ -301,7 +307,7 @@ class WintoucherApp:
                     ):
                         if dot and dot.key is None:
                             dot.key = key
-                            self.overlay.update()
+                            self.overlay.refresh()
                             break
 
         return {"on_press": on_press, "on_release": on_release}
